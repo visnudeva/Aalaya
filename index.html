@@ -258,7 +258,7 @@
         
         <!-- Settings Button (GEAR ICON) -->
         <button class="control-btn" onclick="openModal('settings-modal')" title="Settings">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1H21a2 2 0 0 1 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1H21a2 2 0 0 1 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
         </button>
     </div>
 
@@ -373,14 +373,14 @@
             if(state.focusMode) {
                 document.body.classList.add('focus-mode');
                 focusBtn.classList.add('active');
-                // Apply hide class to ensure they stay hidden if focus mode was toggled after load
+                // Apply hide class immediately to prevent visual flash
                 document.getElementById('header-info-element').classList.add('hide-start');
                 document.getElementById('favorites-section').classList.add('hide-start');
             }
 
             renderSearchEngines(); 
-            updateSearchSelect();
-            
+            updateSearchSelect();  
+
             setInterval(updateClock, 1000);
             
             searchInput.addEventListener('keypress', (e) => {
@@ -537,7 +537,6 @@
                 // Right click also removes
                 el.addEventListener('contextmenu', (e) => {
                     e.preventDefault();
-                    // Using the same shared removal function
                     if(confirm(`Remove ${fav.name} from favorites?`)) {
                         removeFavorite(index);
                     }
@@ -596,7 +595,7 @@
                 headerEl.classList.add('hide-start');
                 favsEl.classList.add('hide-start');
                 
-                showToast("Focus Mode Enabled");
+                // Notification removed as requested
             } else {
                 document.body.classList.remove('focus-mode');
                 focusBtn.classList.remove('active');
@@ -604,8 +603,8 @@
                 // Remove hide-start class to show elements
                 headerEl.classList.remove('hide-start');
                 favsEl.classList.remove('hide-start');
-
-                showToast("Focus Mode Disabled");
+                
+                // Notification removed as requested
             }
         }
 
