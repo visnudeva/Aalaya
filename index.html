@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Start Page Pro</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            /* Dark Theme Variables */
+            --bg-glass: rgba(17, 24, 39, 0.75);
+            --bg-glass-hover: rgba(31, 41, 55, 0.85);
+            --bg-modal: rgba(17, 24, 39, 0.98);
+            --text-main: #f3f4f6;
+            --text-muted: #e5e7eb;
+            --accent: #60a5fa;
+            --accent-hover: #3b82f6;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Class to prevent flash on load in focus mode */
+        .hide-start {
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            transition: background 0.5s ease;
+            background-color: #000;
+        }
+
+        /* Background Layer (Iframe) */
+        #bg-layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; transition: opacity 0.5s ease;
+            border: none;
+            pointer-events: all;
+        }
+
+        main {
+            height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            position: relative; z-index: 10;
+            transition: all 0.5s ease;
+            pointer-events: none;
+        }
+        
+        main > * {
+            pointer-events: auto;
+        }
+
+        /* Header / Date Area */
+        .header-info {
+            text-align: center; margin-bottom: 2rem;
+            display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+            animation: fadeInDown 0.8s ease-out;
+            width: 100%;
+            transition: opacity 0.5s ease;
+        }
+
+        .clock {
+            font-size: 4.5rem; font-weight: 700; letter-spacing: -2px;
+            color: var(--text-main);
+        }
+
+        .date-display {
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent);
+            font-weight: 700;
+            margin-top: -10px;
+        }
+
+        /* Search */
+        .search-container {
+            width: 100%; max-width: 600px; padding: 0 20px;
+            position: relative; animation: fadeInUp 0.8s ease-out 0.2s backwards;
+        }
+        .search-bar {
+            display: flex; align-items: center; background: var(--bg-glass);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            padding: 0.75rem 1.5rem; border-radius: 50px; box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color); transition: var(--transition);
+        }
+        .search-bar:focus-within { transform: scale(1.02); background: var(--bg-glass-hover); box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.15); }
+        .search-engine-select { background: transparent; border: none; color: var(--text-main); font-weight: 600; font-size: 1rem; cursor: pointer; padding-right: 10px; border-right: 1px solid var(--border-color); margin-right: 10px; outline: none; }
+        .search-engine-select option { background-color: var(--bg-modal); color: var(--text-main); }
+        .search-input { flex: 1; background: transparent; border: none; font-size: 1.1rem; color: var(--text-main); outline: none; padding: 0.5rem; }
+        .search-input::placeholder { color: var(--text-muted); }
+        .search-btn { background: var(--accent); border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; transition: var(--transition); }
+        .search-btn:hover { background: var(--accent-hover); transform: rotate(90deg); }
+
+        /* Favorites */
+        .favorites-section {
+            margin-top: 3rem; width: 100%; max-width: 800px; padding: 0 20px;
+            animation: fadeInUp 0.8s ease-out 0.4s backwards;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .favorites-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 1.5rem; justify-items: center; }
+        .fav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--text-main); transition: var(--transition); }
+        .fav-item:hover { transform: translateY(-5px); }
+        .fav-icon { width: 56px; height: 56px; background: var(--bg-glass); backdrop-filter: blur(8px); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem; box-shadow: var(--shadow-sm); transition: var(--transition); font-size: 1.5rem; overflow: hidden; border: 1px solid var(--border-color); }
+        .fav-item:hover .fav-icon { background: var(--accent); color: white; box-shadow: var(--shadow-lg); }
+        .fav-icon img { width: 32px; height: 32px; object-fit: contain; border-radius: 4px; }
+        .fav-name { font-size: 0.875rem; font-weight: 500; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
+        .add-fav-btn { cursor: pointer; border: 2px dashed var(--text-muted); background: transparent; }
+        .add-fav-btn:hover { border-color: var(--accent); color: var(--accent); background: transparent; transform: translateY(-5px); }
+
+        /* Controls */
+        .controls { position: fixed; bottom: 2rem; right: 2rem; display: flex; gap: 1rem; z-index: 100; }
+        .control-btn { width: 48px; height: 48px; border-radius: 50%; background: var(--bg-glass); backdrop-filter: blur(8px); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-main); box-shadow: var(--shadow-sm); transition: var(--transition); }
+        .control-btn:hover { background: var(--bg-modal); transform: scale(1.1); color: var(--accent); }
+        .control-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+        /* Focus Mode Styles */
+        body.focus-mode .header-info {
+            opacity: 0;
+            pointer-events: none;
+        }
+        body.focus-mode .favorites-section {
+            opacity: 0;
+            pointer-events: none;
+            position: absolute; 
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(4px); z-index: 1000;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal {
+            background: var(--bg-modal); width: 90%; max-width: 500px; border-radius: var(--radius);
+            box-shadow: var(--shadow-lg); padding: 2rem;
+            transform: translateY(20px); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            max-height: 85vh; overflow-y: auto;
+        }
+        .modal-overlay.active .modal { transform: translateY(0); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; }
+        .modal-title { font-size: 1.5rem; font-weight: 700; }
+        .close-modal { background: transparent; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; transition: color 0.2s; }
+        .close-modal:hover { color: var(--text-main); }
+        .setting-group { margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem; }
+        .setting-group:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .setting-label { display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .form-input, .form-select { width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-glass); color: var(--text-main); font-size: 1rem; margin-bottom: 0.5rem; outline: none; }
+        .form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
+        
+        /* Engine List Styles */
+        .engine-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1rem; }
+        .engine-list-item { display: flex; justify-content: space-between; align-items: center; background: var(--bg-glass); padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); }
+        .engine-name { font-weight: 500; }
+        .engine-delete { background: transparent; border: none; color: #ef4444; cursor: pointer; font-size: 0.9rem; opacity: 0.7; transition: opacity 0.2s; }
+        .engine-delete:hover { opacity: 1; }
+        .engine-delete:disabled { color: var(--text-muted); cursor: not-allowed; opacity: 0.3; }
+
+        .btn-primary { width: 100%; padding: 0.875rem; background: var(--accent); color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: var(--transition); }
+        .btn-primary:hover { background: var(--accent-hover); }
+        .btn-danger { background: #ef4444; margin-top: 10px; }
+        .btn-danger:hover { background: #dc2626; }
+
+        /* Toast */
+        .toast-container { position: fixed; top: 2rem; right: 2rem; z-index: 2000; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: var(--bg-modal); color: var(--text-main); padding: 1rem 1.5rem; border-radius: 8px; box-shadow: var(--shadow-lg); border-left: 4px solid var(--accent); transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); display: flex; align-items: center; gap: 10px; font-weight: 500; }
+        .toast.show { transform: translateX(0); }
+
+        /* Animations */
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .clock { font-size: 3.5rem; }
+            .modal { width: 95%; padding: 1.5rem; }
+            .controls { bottom: 1.5rem; right: 1.5rem; }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+
+    <!-- Background Layer (Laniakea Iframe) -->
+    <iframe id="bg-layer" src="https://visnudeva.github.io/Laniakea/" title="Background"></iframe>
+
+    <main>
+        <div class="header-info" id="header-info-element">
+            <div class="clock" id="clock">00:00</div>
+            <div class="date-display" id="date-display">Loading Date...</div>
+        </div>
+
+        <!-- Script to prevent Flash on Load in Focus Mode -->
+        <script>
+            try {
+                const saved = localStorage.getItem('nexusStartPage');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    // If user is in focus mode, hide these elements IMMEDIATELY
+                    // before the rest of the page paints or animations run.
+                    if (parsed.focusMode) {
+                        document.getElementById('header-info-element').classList.add('hide-start');
+                        document.getElementById('favorites-section').classList.add('hide-start');
+                    }
+                }
+            } catch(e) { /* Ignore parse errors here, main init handles it */ }
+        })();
+        </script>
+
+        <div class="search-container">
+            <div class="search-bar">
+                <select class="search-engine-select" id="search-engine">
+                    <!-- Engines injected by JS -->
+                </select>
+                <input type="text" class="search-input" id="search-input" placeholder="Search..." autocomplete="off">
+                <button class="search-btn" id="search-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </button>
+            </div>
+        </div>
+
+        <section class="favorites-section" id="favorites-section">
+            <div class="favorites-grid" id="favorites-grid">
+                <!-- Favorites injected by JS -->
+                <div class="fav-item" id="add-fav-item">
+                    <div class="fav-icon add-fav-btn" onclick="openModal('settings-modal')">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </div>
+                    <span class="fav-name">Add New</span>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="controls">
+        <!-- Focus Mode Button -->
+        <button class="control-btn" id="focus-btn" onclick="toggleFocusMode()" title="Toggle Focus Mode">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+        </button>
+        
+        <!-- Settings Button (GEAR ICON) -->
+        <button class="control-btn" onclick="openModal('settings-modal')" title="Settings">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1H21a2 2 0 0 1 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </button>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settings-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Settings</h2>
+                <button class="close-modal" onclick="closeModal('settings-modal')">&times;</button>
+            </div>
+
+            <!-- Search Engines Section -->
+            <div class="setting-group">
+                <label class="setting-label">Search Engines</label>
+                <div id="engine-list" class="engine-list">
+                    <!-- Engines populated by JS -->
+                </div>
+                <div style="margin-top: 10px;">
+                    <input type="text" id="new-engine-name" class="form-input" placeholder="Engine Name (e.g. GPT)">
+                    <input type="text" id="new-engine-url" class="form-input" placeholder="URL (use {q} for query, e.g. .../search?q={q})">
+                    <button class="btn-primary" onclick="addSearchEngine()">Add Engine</button>
+                </div>
+            </div>
+
+            <!-- Favorites Section -->
+            <div class="setting-group">
+                <label class="setting-label">Manage Favorites</label>
+                <!-- List of existing favorites to remove -->
+                <div id="fav-list-settings" class="engine-list">
+                    <!-- Favorites populated by JS -->
+                </div>
+                <div style="margin-top: 10px;">
+                    <input type="text" id="new-fav-name" class="form-input" placeholder="Name (e.g. Reddit)">
+                    <input type="text" id="new-fav-url" class="form-input" placeholder="URL (e.g. reddit.com)">
+                </div>
+                <button class="btn-primary" onclick="addFavorite()">Add Shortcut</button>
+            </div>
+
+            <div class="setting-group">
+                <label class="setting-label">Danger Zone</label>
+                <button class="btn-primary btn-danger" onclick="resetSettings()">Reset All Data</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+        const defaultState = {
+            theme: 'dark', 
+            // Default Engines: Perplexity (1st), DuckDuckGo (2nd), Brave (3rd)
+            searchEngines: {
+                'perplexity': { name: 'Perplexity', url: 'https://www.perplexity.ai/search?q={q}' },
+                'duckduckgo': { name: 'DuckDuckGo', url: 'https://duckduckgo.com/?q={q}' },
+                'brave': { name: 'Brave', url: 'https://search.brave.com/search?q={q}' }
+            },
+            activeEngine: 'perplexity',
+            background: 'https://visnudeva.github.io/Laniakea/', 
+            favorites: [
+                { name: 'YouTube', url: 'youtube.com' },
+                { name: 'GitHub', url: 'github.com' },
+                { name: 'Twitter', url: 'twitter.com' },
+                { name: 'Gmail', url: 'mail.google.com' }
+            ],
+            focusMode: false
+        };
+
+        function loadState() {
+            const saved = localStorage.getItem('nexusStartPage');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    
+                    // Verify if critical engines exist. If not, patch them back.
+                    if (!parsed.searchEngines || !parsed.searchEngines.perplexity) {
+                        parsed.searchEngines = defaultState.searchEngines;
+                        parsed.activeEngine = defaultState.activeEngine;
+                    }
+                    
+                    // Ensure favorites exist to prevent crashes
+                    if (!parsed.favorites) {
+                        parsed.favorites = defaultState.favorites;
+                    }
+
+                    return parsed;
+                } catch (e) {
+                    console.error("State load error, reverting to defaults", e);
+                    return defaultState;
+                }
+            }
+            return defaultState;
+        }
+
+        let state = loadState();
+
+        const searchInput = document.getElementById('search-input');
+        const searchEngineSelect = document.getElementById('search-engine');
+        const favoritesGrid = document.getElementById('favorites-grid');
+        const clockEl = document.getElementById('clock');
+        const dateEl = document.getElementById('date-display');
+        const toastContainer = document.getElementById('toast-container');
+        const focusBtn = document.getElementById('focus-btn');
+        const engineListEl = document.getElementById('engine-list');
+        const favListSettingsEl = document.getElementById('fav-list-settings');
+
+        function init() {
+            applyTheme('dark');
+            renderFavorites();
+            updateClock();
+            updateDate();
+            
+            if(state.focusMode) {
+                document.body.classList.add('focus-mode');
+                focusBtn.classList.add('active');
+                // Apply hide class to ensure they stay hidden if focus mode was toggled after load
+                document.getElementById('header-info-element').classList.add('hide-start');
+                document.getElementById('favorites-section').classList.add('hide-start');
+            }
+
+            renderSearchEngines(); 
+            updateSearchSelect();
+            
+            setInterval(updateClock, 1000);
+            
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') performSearch();
+            });
+            document.getElementById('search-btn').addEventListener('click', performSearch);
+            searchEngineSelect.addEventListener('change', (e) => {
+                state.activeEngine = e.target.value;
+                saveState();
+            });
+        }
+
+        // --- Search Engine Logic ---
+        function updateSearchSelect() {
+            searchEngineSelect.innerHTML = '';
+            
+            // Safety check to ensure we have an active engine
+            if (!state.searchEngines[state.activeEngine]) {
+                const keys = Object.keys(state.searchEngines);
+                state.activeEngine = keys.length > 0 ? keys[0] : '';
+            }
+
+            for (const [key, engine] of Object.entries(state.searchEngines)) {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = engine.name;
+                if (key === state.activeEngine) option.selected = true;
+                searchEngineSelect.appendChild(option);
+            }
+        }
+
+        function renderSearchEngines() {
+            engineListEl.innerHTML = '';
+            const engineKeys = Object.keys(state.searchEngines);
+
+            engineKeys.forEach(key => {
+                const engine = state.searchEngines[key];
+                const item = document.createElement('div');
+                item.className = 'engine-list-item';
+                
+                const isLastEngine = engineKeys.length <= 1;
+
+                item.innerHTML = `
+                    <span class="engine-name">${engine.name}</span>
+                    <button class="engine-delete" ${isLastEngine ? 'disabled' : ''} onclick="removeSearchEngine('${key}')">
+                        Remove
+                    </button>
+                `;
+                engineListEl.appendChild(item);
+            });
+        }
+
+        function addSearchEngine() {
+            const nameInput = document.getElementById('new-engine-name');
+            const urlInput = document.getElementById('new-engine-url');
+            const name = nameInput.value.trim();
+            let url = urlInput.value.trim();
+
+            if (!name || !url) {
+                showToast("Please enter both name and URL");
+                return;
+            }
+            if (!url.includes('{q}')) {
+                showToast("URL must contain {q} for query");
+                return;
+            }
+
+            const key = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') + '-' + Date.now();
+            
+            state.searchEngines[key] = { name, url };
+            saveState();
+
+            renderSearchEngines();
+            updateSearchSelect();
+            
+            nameInput.value = '';
+            urlInput.value = '';
+            showToast("Engine added");
+        }
+
+        function removeSearchEngine(key) {
+            const engineKeys = Object.keys(state.searchEngines);
+            if (engineKeys.length <= 1) {
+                showToast("Cannot remove last search engine");
+                return;
+            }
+            
+            delete state.searchEngines[key];
+            saveState();
+            renderSearchEngines();
+            updateSearchSelect();
+            showToast("Engine removed");
+        }
+
+        function performSearch() {
+            const query = searchInput.value.trim();
+            if (!query) return;
+
+            const engineKey = state.activeEngine;
+            const engine = state.searchEngines[engineKey];
+
+            if (!engine) {
+                showToast("No search engine selected");
+                return;
+            }
+
+            const url = engine.url.replace('{q}', encodeURIComponent(query));
+            window.location.href = url;
+        }
+
+        // --- Favorites Logic (Updated for Settings List) ---
+        function renderFavoritesInSettings() {
+            favListSettingsEl.innerHTML = '';
+            state.favorites.forEach((fav, index) => {
+                const item = document.createElement('div');
+                item.className = 'engine-list-item';
+                item.innerHTML = `
+                    <span class="engine-name">${fav.name}</span>
+                    <button class="engine-delete" onclick="removeFavorite(${index})">
+                        Remove
+                    </button>
+                `;
+                favListSettingsEl.appendChild(item);
+            });
+        }
+
+        function removeFavorite(index) {
+            // Remove from state
+            state.favorites.splice(index, 1);
+            saveState();
+
+            // Update UIs
+            renderFavorites(); // Main Grid
+            renderFavoritesInSettings(); // Settings List
+            
+            showToast('Favorite removed');
+        }
+
+        function renderFavorites() {
+            const addBtn = document.getElementById('add-fav-item');
+            favoritesGrid.innerHTML = '';
+            favoritesGrid.appendChild(addBtn);
+            state.favorites.forEach((fav, index) => {
+                const el = document.createElement('a');
+                el.className = 'fav-item';
+                el.href = 'https://' + fav.url;
+                const faviconUrl = `https://www.google.com/s2/favicons?domain=${fav.url}&sz=64`;
+                el.innerHTML = `
+                    <div class="fav-icon">
+                        <img src="${faviconUrl}" alt="${fav.name}" onerror="this.style.display='none'; this.parentElement.innerText='?'">
+                    </div>
+                    <span class="fav-name">${fav.name}</span>
+                `;
+                // Right click also removes
+                el.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    // Using the same shared removal function
+                    if(confirm(`Remove ${fav.name} from favorites?`)) {
+                        removeFavorite(index);
+                    }
+                });
+                favoritesGrid.appendChild(el);
+            });
+        }
+
+        function addFavorite() {
+            const nameInput = document.getElementById('new-fav-name');
+            const urlInput = document.getElementById('new-fav-url');
+            const name = nameInput.value.trim();
+            let url = urlInput.value.trim().toLowerCase();
+            if (!name || !url) { showToast("Please fill in both fields"); return; }
+            if (!url.startsWith('http')) url = url.replace(/^https?:\/\//, '');
+            state.favorites.push({ name, url });
+            saveState();
+            
+            // Update both UIs
+            renderFavorites();
+            renderFavoritesInSettings();
+            
+            nameInput.value = '';
+            urlInput.value = '';
+            showToast(`${name} added!`);
+            closeModal('settings-modal');
+        }
+
+        // --- Date & Time ---
+        function updateDate() {
+            const now = new Date();
+            const options = { weekday: 'long', month: 'long', day: 'numeric' };
+            dateEl.textContent = now.toLocaleDateString('en-US', options);
+        }
+
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            clockEl.textContent = `${hours}:${minutes}`;
+        }
+
+        // --- Focus Mode ---
+        function toggleFocusMode() {
+            state.focusMode = !state.focusMode;
+            saveState();
+
+            const headerEl = document.getElementById('header-info-element');
+            const favsEl = document.getElementById('favorites-section');
+
+            if (state.focusMode) {
+                document.body.classList.add('focus-mode');
+                focusBtn.classList.add('active');
+                
+                // Apply hide-start class to prevent animation and visibility
+                headerEl.classList.add('hide-start');
+                favsEl.classList.add('hide-start');
+                
+                showToast("Focus Mode Enabled");
+            } else {
+                document.body.classList.remove('focus-mode');
+                focusBtn.classList.remove('active');
+                
+                // Remove hide-start class to show elements
+                headerEl.classList.remove('hide-start');
+                favsEl.classList.remove('hide-start');
+
+                showToast("Focus Mode Disabled");
+            }
+        }
+
+        // --- Core Utils ---
+        function saveState() {
+            localStorage.setItem('nexusStartPage', JSON.stringify(state));
+        }
+
+        function resetSettings() {
+            if(confirm("Are you sure? This will delete all your favorites and settings.")) {
+                localStorage.removeItem('nexusStartPage');
+                location.reload();
+            }
+        }
+
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('active'); });
+        });
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg><span>${message}</span>`;
+            toastContainer.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        }
+
+        init();
+    </script>
+</body>
+</html>
