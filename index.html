@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus Start Page Pro</title>
+    <title>Aalaya</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -128,7 +128,7 @@
         /* Favorites */
         .favorites-section {
             /* CHANGE: Higher margin top (push favorites lower) */
-            margin-top: 5rem; 
+            margin-top: 5rem;
             width: 100%; max-width: 800px; padding: 0 20px;
             /* RESTORED: Fading transition */
             transition: opacity 0.5s ease;
@@ -166,6 +166,8 @@
             color: var(--text-main); 
             box-shadow: var(--shadow-sm); 
             transition: var(--transition); 
+            /* Remove default link styling */
+            text-decoration: none;
         }
         .control-btn:hover { background: var(--bg-modal); transform: scale(1.1); color: var(--accent); }
         .control-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
@@ -175,7 +177,7 @@
         body.hidden-mode .header-info {
             opacity: 0;
             pointer-events: none;
-            position: absolute; /* Remove from flow to keep search centered */
+            position: absolute; /* Remove from flow */
         }
         body.hidden-mode .favorites-section {
             opacity: 0;
@@ -241,10 +243,6 @@
 
         /* Animations */
         /* REMOVED KEYFRAME ANIMATIONS TO STOP UPWARD/SLIDING MOVEMENT */
-        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Responsive */
         @media (max-width: 600px) {
             .clock { font-size: 3.5rem; }
             .modal { width: 95%; padding: 1.5rem; }
@@ -305,6 +303,15 @@
                 <line x1="4" y1="17" x2="20" y2="17"></line>
             </svg>
         </button>
+
+        <!-- HTMLab Button (NEW) -->
+        <a href="https://visnudeva.github.io/HTMLab/" target="_blank" class="control-btn" title="HTMLab">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <!-- External Link Icon -->
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+            </svg>
+        </a>
     </div>
 
     <!-- Settings Modal -->
@@ -411,7 +418,8 @@
 
         function init() {
             applyTheme('dark');
-            renderFavorites();
+            renderFavorites(); // Render main grid
+            renderFavoritesInSettings(); // Render settings list (ADDED CALL)
             updateClock();
             updateDate();
             
