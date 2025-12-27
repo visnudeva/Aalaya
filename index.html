@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aalaya</title>
+    <title>Aalaya Homepage</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -67,17 +67,15 @@
         /* Header / Date Area */
         .header-info {
             text-align: center;
-            /* CHANGE: Higher margin top */
             margin-top: 5rem;
             margin-bottom: 2rem;
             display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
             width: 100%;
-            /* RESTORED: Fading transition */
-            transition: opacity 0.5s ease;
+            transition: opacity 0.8s ease;
         }
 
         .clock {
-            font-size: 4.5rem; font-weight: 700; letter-spacing: -2px;
+            font-size: 4.5rem; font-weight: 500; letter-spacing: -2px;
             color: var(--text-main);
         }
 
@@ -86,14 +84,13 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             color: var(--accent);
-            font-weight: 700;
+            font-weight: 500;
             margin-top: -10px;
         }
 
         /* Search */
         .search-container {
             width: 100%; max-width: 600px; padding: 0 20px;
-            /* IMPORTANT FIX: Relative positioning */
             position: relative; 
             z-index: 5;
         }
@@ -103,7 +100,7 @@
             padding: 0.75rem 1.5rem; border-radius: 50px; box-shadow: var(--shadow-lg);
             border: 1px solid var(--border-color); transition: var(--transition);
         }
-        .search-bar:focus-within { transform: scale(1.02); background: var(--bg-glass-hover); box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.15); }
+        .search-bar:focus-within { transform: scale(1.10); background: var(--bg-glass-hover); box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.15); }
         .search-engine-select { background: transparent; border: none; color: var(--text-main); font-weight: 600; font-size: 1rem; cursor: pointer; padding-right: 10px; border-right: 1px solid var(--border-color); margin-right: 10px; outline: none; }
         .search-engine-select option { background-color: var(--bg-modal); color: var(--text-main); }
         
@@ -130,8 +127,7 @@
             /* CHANGE: Higher margin top (push favorites lower) */
             margin-top: 5rem;
             width: 100%; max-width: 800px; padding: 0 20px;
-            /* RESTORED: Fading transition */
-            transition: opacity 0.5s ease;
+            transition: opacity 0.8s ease;
         }
         .favorites-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 1.5rem; justify-items: center; }
         .fav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--text-main); transition: var(--transition); }
@@ -144,7 +140,6 @@
         .add-fav-btn:hover { border-color: var(--accent); color: var(--accent); background: transparent; transform: translateY(-5px); }
 
         /* Controls */
-        /* RESTORED STANDARD CONTROLS */
         .controls {
             position: fixed; bottom: 2rem; right: 2rem;
             display: flex; gap: 1rem;
@@ -173,7 +168,6 @@
         .control-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
 
         /* Focus Mode Styles */
-        /* Restored Fading logic (opacity instead of visibility) */
         body.hidden-mode .header-info {
             opacity: 0;
             pointer-events: none;
@@ -371,9 +365,7 @@
             background: 'https://visnudeva.github.io/Laniakea/', 
             favorites: [
                 { name: 'YouTube', url: 'youtube.com' },
-                { name: 'GitHub', url: 'github.com' },
-                { name: 'Twitter', url: 'twitter.com' },
-                { name: 'Gmail', url: 'mail.google.com' }
+                { name: 'GitHub', url: 'github.com' }
             ],
             focusMode: false
         };
