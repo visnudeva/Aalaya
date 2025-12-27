@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aalaya</title>
+    <title>Nexus Start Page Pro</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -101,10 +101,24 @@
         .search-bar:focus-within { transform: scale(1.02); background: var(--bg-glass-hover); box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.15); }
         .search-engine-select { background: transparent; border: none; color: var(--text-main); font-weight: 600; font-size: 1rem; cursor: pointer; padding-right: 10px; border-right: 1px solid var(--border-color); margin-right: 10px; outline: none; }
         .search-engine-select option { background-color: var(--bg-modal); color: var(--text-main); }
-        .search-input { flex: 1; background: transparent; border: none; font-size: 1.1rem; color: var(--text-main); outline: none; padding: 0.5rem; }
+        
+        /* --- UPDATED: Search Input with Icon --- */
+        .search-input { 
+            flex: 1; 
+            background: transparent; 
+            border: none; 
+            font-size: 1.1rem; 
+            color: var(--text-main); 
+            outline: none; 
+            padding: 0.5rem; 
+            padding-right: 2.5rem; /* Space for icon */
+            background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2360a5fa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C%3Ccircle cx='11' cy='11' r='8'%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.7rem center;
+            background-size: 1.2rem 1.2rem;
+            transition: background-position 0.2s ease;
+        }
         .search-input::placeholder { color: var(--text-muted); }
-        .search-btn { background: var(--accent); border: none; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white; transition: var(--transition); }
-        .search-btn:hover { background: var(--accent-hover); transform: rotate(90deg); }
 
         /* Favorites */
         .favorites-section {
@@ -123,8 +137,29 @@
         .add-fav-btn:hover { border-color: var(--accent); color: var(--accent); background: transparent; transform: translateY(-5px); }
 
         /* Controls */
-        .controls { position: fixed; bottom: 2rem; right: 2rem; display: flex; gap: 1rem; z-index: 100; }
-        .control-btn { width: 48px; height: 48px; border-radius: 50%; background: var(--bg-glass); backdrop-filter: blur(8px); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-main); box-shadow: var(--shadow-sm); transition: var(--transition); }
+        /* RESTORED STANDARD CONTROLS */
+        .controls {
+            position: fixed; bottom: 2rem; right: 2rem;
+            display: flex; gap: 1rem;
+            z-index: 100;
+        }
+
+        /* Button Styles */
+        .control-btn { 
+            width: 48px; 
+            height: 48px; 
+            border-radius: 50%; 
+            background: var(--bg-glass); 
+            backdrop-filter: blur(8px); 
+            border: 1px solid var(--border-color); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            cursor: pointer; 
+            color: var(--text-main); 
+            box-shadow: var(--shadow-sm); 
+            transition: var(--transition); 
+        }
         .control-btn:hover { background: var(--bg-modal); transform: scale(1.1); color: var(--accent); }
         .control-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
 
@@ -137,6 +172,12 @@
             opacity: 0;
             pointer-events: none;
             position: absolute; 
+        }
+
+        /* IMPORTANT: Force controls visible in Focus Mode so user can exit */
+        body.focus-mode .controls {
+            opacity: 1 !important;
+            pointer-events: auto !important;
         }
 
         /* Modal */
@@ -190,7 +231,6 @@
         @media (max-width: 600px) {
             .clock { font-size: 3.5rem; }
             .modal { width: 95%; padding: 1.5rem; }
-            .controls { bottom: 1.5rem; right: 1.5rem; }
         }
     </style>
 </head>
@@ -205,32 +245,12 @@
             <div class="date-display" id="date-display">Loading Date...</div>
         </div>
 
-        <!-- Script to prevent Flash on Load in Focus Mode -->
-        <script>
-            try {
-                const saved = localStorage.getItem('nexusStartPage');
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    // If user is in focus mode, hide these elements IMMEDIATELY
-                    // before the rest of the page paints or animations run.
-                    if (parsed.focusMode) {
-                        document.getElementById('header-info-element').classList.add('hide-start');
-                        document.getElementById('favorites-section').classList.add('hide-start');
-                    }
-                }
-            } catch(e) { /* Ignore parse errors here, main init handles it */ }
-        })();
-        </script>
-
         <div class="search-container">
             <div class="search-bar">
                 <select class="search-engine-select" id="search-engine">
                     <!-- Engines injected by JS -->
                 </select>
                 <input type="text" class="search-input" id="search-input" placeholder="Search..." autocomplete="off">
-                <button class="search-btn" id="search-btn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                </button>
             </div>
         </div>
 
@@ -247,6 +267,7 @@
         </section>
     </main>
 
+    <!-- RESTORED CONTROLS -->
     <div class="controls">
         <!-- Focus Mode Button -->
         <button class="control-btn" id="focus-btn" onclick="toggleFocusMode()" title="Toggle Focus Mode">
@@ -256,9 +277,16 @@
             </svg>
         </button>
         
-        <!-- Settings Button (GEAR ICON) -->
+        <!-- Settings Button (SLIDERS ICON - Updated for distinct lines) -->
         <button class="control-btn" onclick="openModal('settings-modal')" title="Settings">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1H21a2 2 0 0 1 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <!-- Top Line -->
+                <line x1="4" y1="7" x2="20" y2="7"></line>
+                <!-- Middle Line -->
+                <line x1="4" y1="12" x2="20" y2="12"></line>
+                <!-- Bottom Line -->
+                <line x1="4" y1="17" x2="20" y2="17"></line>
+            </svg>
         </button>
     </div>
 
@@ -321,7 +349,7 @@
                 { name: 'YouTube', url: 'youtube.com' },
                 { name: 'GitHub', url: 'github.com' },
                 { name: 'Twitter', url: 'twitter.com' },
-                { name: 'JustWrite', url: 'https://github.com/visnudeva/Aalaya/blob/0f659f399a2d83b01ba71ddc2cadcdb42f586320/JustWrite.html' }
+                { name: 'Gmail', url: 'mail.google.com' }
             ],
             focusMode: false
         };
@@ -386,7 +414,7 @@
             searchInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') performSearch();
             });
-            document.getElementById('search-btn').addEventListener('click', performSearch);
+            
             searchEngineSelect.addEventListener('change', (e) => {
                 state.activeEngine = e.target.value;
                 saveState();
@@ -537,6 +565,7 @@
                 // Right click also removes
                 el.addEventListener('contextmenu', (e) => {
                     e.preventDefault();
+                    // Using same shared removal function
                     if(confirm(`Remove ${fav.name} from favorites?`)) {
                         removeFavorite(index);
                     }
@@ -594,8 +623,6 @@
                 // Apply hide-start class to prevent animation and visibility
                 headerEl.classList.add('hide-start');
                 favsEl.classList.add('hide-start');
-                
-                // Notification removed as requested
             } else {
                 document.body.classList.remove('focus-mode');
                 focusBtn.classList.remove('active');
@@ -603,8 +630,6 @@
                 // Remove hide-start class to show elements
                 headerEl.classList.remove('hide-start');
                 favsEl.classList.remove('hide-start');
-                
-                // Notification removed as requested
             }
         }
 
