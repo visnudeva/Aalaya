@@ -56,7 +56,7 @@
         main {
             height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;
             position: relative; z-index: 10;
-            transition: all 0.5s ease;
+            /* Removed main container transition to reduce jumping */
             pointer-events: none;
         }
         
@@ -66,10 +66,13 @@
 
         /* Header / Date Area */
         .header-info {
-            text-align: center; margin-bottom: 2rem;
+            text-align: center;
+            /* CHANGE: Higher margin top */
+            margin-top: 5rem;
+            margin-bottom: 2rem;
             display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
-            animation: fadeInDown 0.8s ease-out;
             width: 100%;
+            /* RESTORED: Fading transition */
             transition: opacity 0.5s ease;
         }
 
@@ -90,7 +93,9 @@
         /* Search */
         .search-container {
             width: 100%; max-width: 600px; padding: 0 20px;
-            position: relative; animation: fadeInUp 0.8s ease-out 0.2s backwards;
+            /* IMPORTANT FIX: Relative positioning */
+            position: relative; 
+            z-index: 5;
         }
         .search-bar {
             display: flex; align-items: center; background: var(--bg-glass);
@@ -122,9 +127,11 @@
 
         /* Favorites */
         .favorites-section {
-            margin-top: 3rem; width: 100%; max-width: 800px; padding: 0 20px;
-            animation: fadeInUp 0.8s ease-out 0.4s backwards;
-            transition: opacity 0.5s ease, transform 0.5s ease;
+            /* CHANGE: Higher margin top (push favorites lower) */
+            margin-top: 5rem; 
+            width: 100%; max-width: 800px; padding: 0 20px;
+            /* RESTORED: Fading transition */
+            transition: opacity 0.5s ease;
         }
         .favorites-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 1.5rem; justify-items: center; }
         .fav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--text-main); transition: var(--transition); }
@@ -164,18 +171,27 @@
         .control-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
 
         /* Focus Mode Styles */
-        body.focus-mode .header-info {
+        /* Restored Fading logic (opacity instead of visibility) */
+        body.hidden-mode .header-info {
+            opacity: 0;
+            pointer-events: none;
+            position: absolute; /* Remove from flow to keep search centered */
+        }
+        body.hidden-mode .favorites-section {
             opacity: 0;
             pointer-events: none;
         }
-        body.focus-mode .favorites-section {
-            opacity: 0;
-            pointer-events: none;
-            position: absolute; 
+
+        /* FORCE SEARCH BAR TO CENTER IN FOCUS MODE */
+        body.hidden-mode .search-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, 0);
         }
 
         /* IMPORTANT: Force controls visible in Focus Mode so user can exit */
-        body.focus-mode .controls {
+        body.hidden-mode .controls {
             opacity: 1 !important;
             pointer-events: auto !important;
         }
@@ -224,6 +240,7 @@
         .toast.show { transform: translateX(0); }
 
         /* Animations */
+        /* REMOVED KEYFRAME ANIMATIONS TO STOP UPWARD/SLIDING MOVEMENT */
         @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -277,7 +294,7 @@
             </svg>
         </button>
         
-        <!-- Settings Button (SLIDERS ICON - Updated for distinct lines) -->
+        <!-- Settings Button (SLIDERS ICON) -->
         <button class="control-btn" onclick="openModal('settings-modal')" title="Settings">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <!-- Top Line -->
@@ -399,9 +416,9 @@
             updateDate();
             
             if(state.focusMode) {
-                document.body.classList.add('focus-mode');
+                document.body.classList.add('hidden-mode');
                 focusBtn.classList.add('active');
-                // Apply hide class immediately to prevent visual flash
+                // Apply hide-start class immediately to prevent visual flash
                 document.getElementById('header-info-element').classList.add('hide-start');
                 document.getElementById('favorites-section').classList.add('hide-start');
             }
@@ -617,17 +634,18 @@
             const favsEl = document.getElementById('favorites-section');
 
             if (state.focusMode) {
-                document.body.classList.add('focus-mode');
+                document.body.classList.add('hidden-mode');
                 focusBtn.classList.add('active');
                 
-                // Apply hide-start class to prevent animation and visibility
+                // Use opacity for Fading effect
                 headerEl.classList.add('hide-start');
                 favsEl.classList.add('hide-start');
+                
             } else {
-                document.body.classList.remove('focus-mode');
+                document.body.classList.remove('hidden-mode');
                 focusBtn.classList.remove('active');
                 
-                // Remove hide-start class to show elements
+                // Remove class to show elements (Fade in via opacity transition)
                 headerEl.classList.remove('hide-start');
                 favsEl.classList.remove('hide-start');
             }
